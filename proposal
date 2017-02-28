@@ -1,0 +1,22 @@
+Team: Taylor Henderson (thender8@masonlive.gmu.edu)
+Andrew Lorentson (alorents@masonlive.gmu.edu)
+Stephen Yee
+
+Game: Mancala 
+
+Rules of the game: 
+http://www.ultraboardgames.com/mancala/game-rules.php
+
+Software and Hardware platforms: Java, Unix
+
+Interface for players: GUI written in Java with Mouse or keyboard interaction
+
+Strategy/Tactics: Minimax, alpha beta pruning, heuristic evaluation function,
+
+Time Table:
+March 7 - environment setup
+March 14 - Working GUI 
+March 21 - basic minimax with primitive heuristic evaluation function 
+March 28 - A-B pruning
+April 4 - test play against AI
+April 18 - optimize functions based on test games (possible automation/self learning if time permits)

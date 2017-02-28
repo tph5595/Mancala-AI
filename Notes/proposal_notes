@@ -1,0 +1,23 @@
+What is it called when you wait for the board to “settle down” before you run an eval func?
+Not sure, think our eval function is just stones captured, then plugged into minimax?
+We should also try to consider where stones are in our holes too though. I don't want to lock us into anything too hard which is why i'm trying to be fague. Also even if it's just rocks captured we should not evaluate until we have used up all of our “free turns” you know?
+Yeah I was forgetting about the free turns thing, I was thinking it was just 6 possible moves but they can branch too
+Six moves is about 46k trees  with no pruning worst case which seems reasonable. If we have time and can figure out how to do it, we should try to add genetic algos into it. I don't want to put that here and be held accountable for it though incase it ends up being too hard
+Agreed, think the tree with pruning is sufficient, but won’t know for sure until we try it I guess
+Exactly and we can always go above and beyond what we set forth here, this is more of a lower bound in my opinion
+Yup
+When is the due date?
+April 27
+K , sweet, cool
+I’m sure we'll hit some roadblocks so i'm trying to front load as much as we can that way we will have time when stuff goes wrong
+Thoughts?
+Yeah I agree, and definitely think gui first, well yeah environment then gui
+Yea idk what setup we will need but just incase. Any other steps you think im missing?
+Can’t think of anything
+Ok lets leave these notes for now for Stephen and we can delete them before we print this out for the professor tomorrow. 
+Sounds good
+Alright see you tomorrow then man! Can’t wait to start. Ill setup a git repo tonight for it. Do you care if it's public or private?
+Not really
+Sounds good, ill send the repo link in the group chat then, how do we want to divide up tasks? Just on a weekly basis set goals based on the schedule?
+Probably something like that, can talk after class about it tomorrow maybe?
+Sounds perfect to me!
