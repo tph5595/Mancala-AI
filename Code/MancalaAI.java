@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MancalaAI {
-	int ply = 1;
+	int ply = 2;
 	Tuple bad = new Tuple(Integer.MIN_VALUE, "");
 	Tuple max = new Tuple(Integer.MAX_VALUE, "");
 
@@ -75,8 +75,8 @@ public class MancalaAI {
 			ArrayList<int[]> aboards = new ArrayList<int[]>();
 			ArrayList<int[]> bboards = null;
 			for (int j = 0; j <= 5; j++) {
-				aboards = this.untilQuite(mboard, "b" + j);
-				Tuple b = bad;
+				aboards = this.untilQuite(Arrays.copyOf(mboard, mboard.length), "b" + j);
+				Tuple b = max;
 				for (int[] curBoard : aboards) {
 					bboards = this.untilQuite(curBoard, "a0");
 					for (int[] bboard : bboards) {
