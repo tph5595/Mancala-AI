@@ -1,6 +1,6 @@
 public class Tuple {
-	public final int value;
-	public final String move;
+	public int value;
+	public String move;
 
 	public Tuple(int x, String y) {
 		this.value = x;

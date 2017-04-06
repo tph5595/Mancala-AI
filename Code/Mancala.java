@@ -10,7 +10,7 @@ public class Mancala {
 		this.AI = mancalaAI;
 	}
 
-	public void displayBoard() {
+	public void displayBoard(int [] board) {
 		System.out.print("         0   1   2   3   4   5");
 		for (int i = 0; i < 2; i++) {
 			System.out.print("\n   ");
@@ -58,33 +58,40 @@ public class Mancala {
 	public void run() {
 		String move = null;
 		while (!this.isGameOver()) {
-			this.displayBoard();
+			this.displayBoard(board);
 			if (playerTurn)
 				move = promptPlayer();
 			else
 				move = promptAI();
 			playerTurn = makeMove(move, playerTurn);
 		}
-		this.displayBoard();
+		this.displayBoard(board);
 		// TODO gameover message needed
 
 	}
 
 	private boolean makeMove(String move, boolean playerTurn) {
-		printmove(move, playerTurn);
-		int piecesInHand = board[Math.abs((move.charAt(1) - '0')-5)];
-		board[Math.abs((move.charAt(1) - '0')-5)] = 0;
-		int pos = Math.abs((move.charAt(1) - '0')-5);
-		System.out.println();
+		this.printmove(move, playerTurn);
+		int piecesInHand;
+		int pos;
+		if (move.charAt(0) == 'a') {
+			piecesInHand = board[Math.abs((move.charAt(1) - '0') - 5)];
+			pos = Math.abs((move.charAt(1) - '0') - 5);
+			board[Math.abs((move.charAt(1) - '0') - 5)] = 0;
+		} else {
+			piecesInHand = board[(move.charAt(1) - '0') + 7];
+			pos = (move.charAt(1) - '0') + 7;
+			board[(move.charAt(1) - '0') + 7] = 0;
+		}
+
 		while (piecesInHand > 0) {
 			pos = (pos + 1) % board.length;
 			board[pos]++;
 			piecesInHand--;
 		}
-		if ((pos == 6 && move.charAt(0) == 'a')|| (pos == 13 && move.charAt(0) == 'b'))
+		if ((pos == 6 && move.charAt(0) == 'a') || (pos == 13 && move.charAt(0) == 'b'))
 			return playerTurn;
 		return !playerTurn;
-
 	}
 
 	private void printmove(String move, boolean playerTurn) {
