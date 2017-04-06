@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
 public class Mancala {
-	int[] board = { 4, 0, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0 };
+	int[] board = { 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0 };
 	MancalaAI AI;
 	boolean playerTurn = true;
 	Scanner console = new Scanner(System.in);
@@ -73,17 +73,17 @@ public class Mancala {
 	private boolean makeMove(String move, boolean playerTurn) {
 		printmove(move, playerTurn);
 		int piecesInHand = board[Math.abs((move.charAt(1) - '0')-5)];
+		board[Math.abs((move.charAt(1) - '0')-5)] = 0;
 		int pos = Math.abs((move.charAt(1) - '0')-5);
-		System.out.println(pos);
+		System.out.println();
 		while (piecesInHand > 0) {
 			pos = (pos + 1) % board.length;
 			board[pos]++;
 			piecesInHand--;
 		}
-		if (pos == 6 || pos == 13)
+		if ((pos == 6 && move.charAt(0) == 'a')|| (pos == 13 && move.charAt(0) == 'b'))
 			return playerTurn;
 		return !playerTurn;
-		// TODO Auto-generated method stub
 
 	}
 
