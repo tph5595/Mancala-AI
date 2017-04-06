@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MancalaAI {
-	int ply = 2;
+	int ply = 3;
 	Tuple bad = new Tuple(Integer.MIN_VALUE, "");
 	Tuple max = new Tuple(Integer.MAX_VALUE, "");
 
@@ -27,7 +27,7 @@ public class MancalaAI {
 				if (!this.invalid("b" + j, mboard)) {
 					board = this.untilQuite(Arrays.copyOf(mboard, mboard.length), "b" + j);
 					Tuple b = null;
-					//System.out.println(board.size());
+					// System.out.println(board.size());
 					// run through all of mins move aj
 					for (int[] curBoard : board) {
 						// System.out.println("hi");
@@ -42,9 +42,9 @@ public class MancalaAI {
 							// if we have found a value less then the current
 							// prune
 							// then stop
-							if (b.value < alphaPrune) {
-								return b;
-							}
+							//if (b.value < alphaPrune) {
+							//	return b;
+							//}
 							// check if there are pieces in the position
 							// selected
 							if (!this.invalid("a" + i, curBoard)) {
@@ -62,9 +62,9 @@ public class MancalaAI {
 						// if this max is less than the current prune then set
 						// prune
 						// to this new max
-						if (bb.value < alphaPrune) {
-							alphaPrune = bb.value;
-						}
+						//if (bb.value < alphaPrune) {
+						//	alphaPrune = bb.value;
+						//}
 					}
 				}
 			}
@@ -75,25 +75,38 @@ public class MancalaAI {
 			ArrayList<int[]> aboards = new ArrayList<int[]>();
 			ArrayList<int[]> bboards = null;
 			for (int j = 0; j <= 5; j++) {
-				aboards = this.untilQuite(Arrays.copyOf(mboard, mboard.length), "b" + j);
-				Tuple b = max;
-				for (int[] curBoard : aboards) {
-					bboards = this.untilQuite(curBoard, "a0");
-					for (int[] bboard : bboards) {
-						b = Tuple.min(b, search(ply - 1, Arrays.copyOf(bboard, bboard.length)));
-					}
-					for (int i = 1; i <= 5; i++) {
-						if (b.value < alphaPrune) {
-							return b;
+				if (!this.invalid("b" + j, mboard)) {
+					aboards = this.untilQuite(Arrays.copyOf(mboard, mboard.length), "b" + j);
+					Tuple b = max;
+					boolean found = false;
+					for (int[] curBoard : aboards) {
+						if (!this.invalid("a0", curBoard)) {
+							found = true;
+							bboards = this.untilQuite(curBoard, "a0");
+							for (int[] bboard : bboards) {
+								b = Tuple.min(b, search(ply - 1, Arrays.copyOf(bboard, bboard.length)));
+							}
 						}
-						bboards = this.untilQuite(curBoard, "a" + i);
-						for (int[] bboard : bboards) {
-							b = Tuple.min(b, search(ply - 1, Arrays.copyOf(bboard, bboard.length)));
+						for (int i = 1; i <= 5; i++) {
+							//if (b.value < alphaPrune) {
+							//	return b;
+							//}
+							if (!this.invalid("a" + i, curBoard)) {
+								found = true;
+								bboards = this.untilQuite(curBoard, "a" + i);
+								for (int[] bboard : bboards) {
+									b = Tuple.min(b, search(ply - 1, Arrays.copyOf(bboard, bboard.length)));
+								}
+							}
 						}
-					}
-					bb = Tuple.max(bb, b);
-					if (bb.value < alphaPrune) {
-						alphaPrune = bb.value;
+						if(found && b.value > bb.value){
+							bb = b;
+							bb.move = "b" + j;
+						}
+						//bb = Tuple.max(bb, b);
+						//if (bb.value < alphaPrune) {
+						//	alphaPrune = bb.value;
+						//}
 					}
 				}
 			}
@@ -102,12 +115,24 @@ public class MancalaAI {
 	}
 
 	public int hueristic(int[] board) {
-		if (isGameOver(board))
+		// Mancala m = new Mancala(null);
+		// System.out.println("board value: " + (board[13] - board[6]));
+		// m.displayBoard(board);
+		// System.out.println("\n\n\n");
+		if (board == null) {
+			return Integer.MAX_VALUE;
+		}
+		if (isGameOver(board) && board[13] - board[6] > 0)
+			return Integer.MIN_VALUE;
+		else if(this.isGameOver(board))
 			return Integer.MAX_VALUE;
 		return board[13] - board[6];
 	}
 
 	private int[] min(ArrayList<int[]> boards) {
+		if (boards.size() == 0) {
+			return null;
+		}
 		int b = this.hueristic(boards.get(0));
 		int[] ba = boards.get(0);
 		int nb;
@@ -151,9 +176,9 @@ public class MancalaAI {
 						outboards.add(cur);
 					} else {
 						inboards.add(cur);
-						//System.out.println("\n\n\nadd\t" + ab + i);
-						//m.displayBoard(aBoard);
-						//m.displayBoard(cur);
+						// System.out.println("\n\n\nadd\t" + ab + i);
+						// m.displayBoard(aBoard);
+						// m.displayBoard(cur);
 					}
 				}
 			}

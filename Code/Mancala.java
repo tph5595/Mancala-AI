@@ -11,7 +11,7 @@ public class Mancala {
 	}
 
 	public void displayBoard(int [] board) {
-		System.out.print("         0   1   2   3   4   5");
+		System.out.print("          0    1    2    3    4    5");
 		for (int i = 0; i < 2; i++) {
 			System.out.print("\n   ");
 			if (i != 0) {
@@ -21,7 +21,7 @@ public class Mancala {
 				}
 				System.out.print(board[6] + " ");
 			}
-			for (int k = 0; k < 33 + (i * (-8)); k++)
+			for (int k = 0; k < 39 + (i * (-8)); k++)
 				System.out.print("-");
 			if (i != 0) {
 				if (board[13] / 10 == 0) {
@@ -37,20 +37,35 @@ public class Mancala {
 			else
 				System.out.print("b");
 			if (i == 0) {
-				System.out.print("  |   | " + board[5] + " |");
+				
+				System.out.print("  |   | ");
+				if(board[5]/10 == 0){
+					System.out.print(" ");
+				}
+				System.out.print(board[5] + " |");
 				for (int j = 4; j >= 0; j--) {
+					if(board[j]/10 == 0){
+						System.out.print(" ");
+					}
 					System.out.print(" " + board[j] + " |");
 				}
 			} else {
-				System.out.print("  |   | " + board[7] + " |");
+				System.out.print("  |   | ");
+				if(board[7]/10 == 0){
+					System.out.print(" ");
+				}
+				System.out.print(board[7] + " |");
 				for (int j = 1; j < 6; j++) {
+					if(board[i * 7 + j]/10 == 0){
+						System.out.print(" ");
+					}
 					System.out.print(" " + board[i * 7 + j] + " |");
 				}
 			}
 			System.out.print("   |");
 		}
 		System.out.print("\n   ");
-		for (int k = 0; k < 33; k++)
+		for (int k = 0; k < 39; k++)
 			System.out.print("-");
 		System.out.println();
 	}
@@ -65,8 +80,13 @@ public class Mancala {
 				move = promptAI();
 			playerTurn = makeMove(move, playerTurn);
 		}
+		System.out.println("\n\n\nGAME OVER\nFinal Board: ");
 		this.displayBoard(board);
-		// TODO gameover message needed
+		if(board[13] - board[6] > 0){
+			System.out.println("AI won!");
+		}else{
+			System.out.println("You won!");
+		}
 
 	}
 
@@ -104,7 +124,6 @@ public class Mancala {
 	}
 
 	private String promptAI() {
-		console.nextLine();
 		return AI.nextmove(board);
 
 	}
