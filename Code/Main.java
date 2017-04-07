@@ -5,7 +5,7 @@ public class Main {
 	public static void main(String[] args) {
 		boolean learn = true;
 		if (learn) {
-			learn(3, 3, 3, -100, 100);
+			learn(3, 3, 3, -10, 10);
 		} else {
 			Mancala game = new Mancala(new MancalaAI());
 			game.run();
@@ -107,7 +107,7 @@ public class Main {
 	private static void randomStart(int[][] members, int min, int max) {
 		for (int i = 0; i < members.length; i++) {
 			for (int j = 0; j < 14; j++) {
-				System.out.println(i+"\t"+j);
+				//System.out.println(i+"\t"+j);
 				members[i][j] = min + (int) (Math.random() * max);
 			}
 		}
