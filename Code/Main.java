@@ -5,7 +5,7 @@ public class Main {
 	public static void main(String[] args) {
 		boolean learn = true;
 		if (learn) {
-			learn(3, 3, 3, -10, 10);
+			learn(10, 10, 5, -100, 100);
 		} else {
 			Mancala game = new Mancala(new MancalaAI());
 			game.run();
@@ -17,6 +17,7 @@ public class Main {
 		int[][] members = new int[pop][14];
 		double[] wins = null;
 		boolean win;
+		int [] played = new int[pop];
 		int rand;
 
 		randomStart(members, min, max);
@@ -25,8 +26,14 @@ public class Main {
 			for (int j = 0; j < pop; j++) {
 				for (int k = 0; k < games; k++) {
 					rand = (int) (Math.random() * pop);
+					while(rand == k){
+						rand = (int)(Math.random() * pop);
+					}
+					System.out.println("Generation: " + i + "\tChild: " + j + "\tGame: " + k);
 					game = new Mancala(new MancalaAI(members[k]), new MancalaAI(members[rand]));
 					win = game.run();
+					played[k]++;
+					played[rand]++;
 					if (win) {
 						wins[k]++;
 					} else {
@@ -34,22 +41,29 @@ public class Main {
 					}
 				}
 			}
+			int maxpos = 0;
+			for(int m = 0; m < wins.length; m++){
+				if(wins[m]/played[m] > wins[maxpos]/played[maxpos]){
+					maxpos = m;
+				}
+			}
+			System.out.println(Arrays.toString(members[maxpos]));
 			if (i < gens - 1)
-				evolve(members, wins, games * pop, min, max);
+				evolve(members, wins, games * pop, min, max, played);
 		}
 		int maxpos = 0;
 		for(int i = 0; i < wins.length; i++){
-			if(wins[i] > maxpos){
+			if(wins[i] > wins[maxpos]){
 				maxpos = i;
 			}
 		}
 		System.out.println("Best values are: " + Arrays.toString(members[maxpos]));
 	}
 
-	private static void evolve(int[][] members, double[] wins, int totalGames, int min, int max) {
+	private static void evolve(int[][] members, double[] wins, int totalGames, int min, int max, int [] played) {
 		// find probability of each value in array
 		for (int i = 0; i < wins.length; i++) {
-			wins[i] = wins[i] / totalGames;
+			wins[i] = wins[i] / played[i];
 		}
 		// find probability ranges
 		float runningTotal = 0;

@@ -1,12 +1,13 @@
 import java.util.Scanner;
 
 public class Mancala {
-	int bvalues = 2;
-	int[] board = { 0, 0, 0, 3, 1, 1, 0, bvalues, bvalues, bvalues, bvalues, bvalues, bvalues, 0 };
+	int bvalues = 3;
+	int[] board = { bvalues, bvalues, bvalues, bvalues, bvalues, bvalues, 0, bvalues, bvalues, bvalues, bvalues, bvalues, bvalues, 0 };
 	MancalaAI AI;
 	MancalaAI AI2;
 	boolean playerTurn = true;
 	private boolean aiGame = false;
+	boolean quite = false;
 	Scanner console = new Scanner(System.in);
 
 	public Mancala(MancalaAI mancalaAI) {
@@ -17,6 +18,7 @@ public class Mancala {
 		this.AI = ai1;
 		this.AI2 = ai2;
 		this.aiGame = true;
+		quite = true;
 	}
 
 	public void displayBoard(int[] board) {
@@ -82,7 +84,8 @@ public class Mancala {
 	public boolean run() {
 		String move = null;
 		while (!this.isGameOver()) {
-			this.displayBoard(board);
+			if(!quite)
+				this.displayBoard(board);
 			if (playerTurn && !this.aiGame)
 				move = promptPlayer();
 			else if (playerTurn && this.aiGame) {
@@ -104,7 +107,8 @@ public class Mancala {
 	}
 
 	private boolean makeMove(String move, boolean playerTurn) {
-		this.printmove(move, playerTurn);
+		if(!quite)
+			this.printmove(move, playerTurn);
 		int piecesInHand;
 		int pos;
 		if (move.charAt(0) == 'a') {
