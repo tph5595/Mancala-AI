@@ -1,16 +1,25 @@
 import java.util.Scanner;
 
 public class Mancala {
-	int[] board = { 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0 };
+	int bvalues = 2;
+	int[] board = { 0, 0, 0, 3, 1, 1, 0, bvalues, bvalues, bvalues, bvalues, bvalues, bvalues, 0 };
 	MancalaAI AI;
+	MancalaAI AI2;
 	boolean playerTurn = true;
+	private boolean aiGame = false;
 	Scanner console = new Scanner(System.in);
 
 	public Mancala(MancalaAI mancalaAI) {
 		this.AI = mancalaAI;
 	}
 
-	public void displayBoard(int [] board) {
+	public Mancala(MancalaAI ai1, MancalaAI ai2) {
+		this.AI = ai1;
+		this.AI2 = ai2;
+		this.aiGame = true;
+	}
+
+	public void displayBoard(int[] board) {
 		System.out.print("          0    1    2    3    4    5");
 		for (int i = 0; i < 2; i++) {
 			System.out.print("\n   ");
@@ -37,26 +46,26 @@ public class Mancala {
 			else
 				System.out.print("b");
 			if (i == 0) {
-				
+
 				System.out.print("  |   | ");
-				if(board[5]/10 == 0){
+				if (board[5] / 10 == 0) {
 					System.out.print(" ");
 				}
 				System.out.print(board[5] + " |");
 				for (int j = 4; j >= 0; j--) {
-					if(board[j]/10 == 0){
+					if (board[j] / 10 == 0) {
 						System.out.print(" ");
 					}
 					System.out.print(" " + board[j] + " |");
 				}
 			} else {
 				System.out.print("  |   | ");
-				if(board[7]/10 == 0){
+				if (board[7] / 10 == 0) {
 					System.out.print(" ");
 				}
 				System.out.print(board[7] + " |");
 				for (int j = 1; j < 6; j++) {
-					if(board[i * 7 + j]/10 == 0){
+					if (board[i * 7 + j] / 10 == 0) {
 						System.out.print(" ");
 					}
 					System.out.print(" " + board[i * 7 + j] + " |");
@@ -70,22 +79,26 @@ public class Mancala {
 		System.out.println();
 	}
 
-	public void run() {
+	public boolean run() {
 		String move = null;
 		while (!this.isGameOver()) {
 			this.displayBoard(board);
-			if (playerTurn)
+			if (playerTurn && !this.aiGame)
 				move = promptPlayer();
-			else
+			else if (playerTurn && this.aiGame) {
+				move = promptAI2();
+			} else
 				move = promptAI();
 			playerTurn = makeMove(move, playerTurn);
 		}
 		System.out.println("\n\n\nGAME OVER\nFinal Board: ");
 		this.displayBoard(board);
-		if(board[13] - board[6] > 0){
+		if (board[13] - board[6] > 0) {
 			System.out.println("AI won!");
-		}else{
+			return true;
+		} else {
 			System.out.println("You won!");
+			return false;
 		}
 
 	}
@@ -116,8 +129,10 @@ public class Mancala {
 
 	private void printmove(String move, boolean playerTurn) {
 		if (playerTurn) {
+			System.out.println("move :" + move);
 			System.out.println("You moved pieces from " + move.substring(0, 2));
 		} else {
+			System.out.println("move :" + move);
 			System.out.println("The AI moved pieces from " + move.substring(0, 2));
 		}
 
@@ -125,6 +140,11 @@ public class Mancala {
 
 	private String promptAI() {
 		return AI.nextmove(board);
+
+	}
+
+	private String promptAI2() {
+		return AI2.nextmove(board, true);
 
 	}
 
@@ -149,7 +169,7 @@ public class Mancala {
 			return true;
 		if (input.charAt(0) == 'b')
 			return true;
-		if (board[Math.abs((input.charAt(1) - '0')-5)] == 0)
+		if (board[Math.abs((input.charAt(1) - '0') - 5)] == 0)
 			return true;
 		return false;
 	}
