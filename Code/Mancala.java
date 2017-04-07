@@ -3,11 +3,18 @@ import java.util.Scanner;
 public class Mancala {
 	int[] board = { 4, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0 };
 	MancalaAI AI;
+	MancalaAI AI2;
 	boolean playerTurn = true;
+	private boolean aiGame = false;
 	Scanner console = new Scanner(System.in);
 
 	public Mancala(MancalaAI mancalaAI) {
 		this.AI = mancalaAI;
+	}
+	public Mancala(MancalaAI ai1,MancalaAI ai2) {
+		this.AI = ai1;
+		this.AI2 = ai2;
+		this.aiGame = true;
 	}
 
 	public void displayBoard(int [] board) {
@@ -70,12 +77,15 @@ public class Mancala {
 		System.out.println();
 	}
 
-	public void run() {
+	public boolean run() {
 		String move = null;
 		while (!this.isGameOver()) {
 			this.displayBoard(board);
-			if (playerTurn)
+			if (playerTurn && !this.aiGame)
 				move = promptPlayer();
+			else if(playerTurn && this.aiGame){
+				move = promptAI2();
+			}
 			else
 				move = promptAI();
 			playerTurn = makeMove(move, playerTurn);
@@ -84,8 +94,10 @@ public class Mancala {
 		this.displayBoard(board);
 		if(board[13] - board[6] > 0){
 			System.out.println("AI won!");
+			return true;
 		}else{
 			System.out.println("You won!");
+			return false;
 		}
 
 	}
@@ -125,6 +137,10 @@ public class Mancala {
 
 	private String promptAI() {
 		return AI.nextmove(board);
+
+	}
+	private String promptAI2() {
+		return AI2.nextmove(board, true);
 
 	}
 
