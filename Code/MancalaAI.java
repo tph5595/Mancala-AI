@@ -95,11 +95,11 @@ public class MancalaAI {
 			}
 			for (int j = 0; j <= 5; j++) {
 				if (!this.invalid("b" + j, mboard)) {
-					//System.out.println("b"+j);
+					// System.out.println("b"+j);
 					aboards = this.untilQuite(Arrays.copyOf(mboard, mboard.length), "b" + j);
 					Tuple b = max;
 					boolean found = false;
-					//System.out.println(aboards.size());
+					// System.out.println(aboards.size());
 					for (int[] curBoard : aboards) {
 						if (!this.isGameOver(curBoard)) {
 							if (!this.invalid("a0", curBoard)) {
@@ -124,7 +124,7 @@ public class MancalaAI {
 						} else {
 							b = new Tuple(this.hueristic(curBoard), "m");
 							found = true;
-						//	System.out.println(b.value);
+							// System.out.println(b.value);
 						}
 						if (found && b.value > bb.value) {
 							bb = b;
@@ -149,14 +149,9 @@ public class MancalaAI {
 			Tuple bb = bad;
 			// create instance of board for local search instance
 			ArrayList<int[]> board = new ArrayList<int[]>();
-			//Mancala m = new Mancala(null);
-			//m.displayBoard(mboard);
-			//if (this.isGameOver(mboard)) {
-			//	System.out.println("hi");
-			//	Mancala m = new Mancala(null);
-			//	m.displayBoard(mboard);
-			//	return new Tuple(this.hueristic(mboard), "n");
-			//}
+			if (this.isGameOver(mboard)) {
+				return new Tuple(this.hueristic(mboard), "n");
+			}
 			// search for max's move
 			for (int j = 0; j <= 5; j++) {
 				// find possible board states from starting move (accounts for
@@ -169,7 +164,6 @@ public class MancalaAI {
 					// System.out.println(board.size());
 					// run through all of mins move aj
 					for (int[] curBoard : board) {
-						if (!this.isGameOver(curBoard)) {
 						// System.out.println("hi");
 						// calculate max's move b0 by finding all boards
 						// possible
@@ -191,19 +185,15 @@ public class MancalaAI {
 								// else calculate next branch same as we did for
 								// b0
 								b = Tuple.min(b,
-										new Tuple(this.hueristic2(this.min(
+										new Tuple(this.hueristic(this.min(
 												this.untilQuite(Arrays.copyOf(curBoard, curBoard.length), "b" + i))),
 										"b" + i));
 							}
 						}
-						}else{
-							b = new Tuple(this.hueristic2(curBoard), "m");
-						}
 						// find the max of all the current min moves
-						if(b.value > bb.value){
-							bb = b;
-							bb.move = "a" + j;
-						}// if this max is less than the current prune then set
+						bb = Tuple.max(bb, b);
+						bb.move = "a" + j;
+						// if this max is less than the current prune then set
 						// prune
 						// to this new max
 						// if (bb.value < alphaPrune) {
@@ -214,58 +204,59 @@ public class MancalaAI {
 			}
 			// return best state move
 			return bb;
-		}else
-
-	{
-		Tuple bb = bad;
-		ArrayList<int[]> aboards = new ArrayList<int[]>();
-		ArrayList<int[]> bboards = null;
-		// if (this.isGameOver(mboard)) {
-		// return new Tuple(this.hueristic(mboard), "n");
-		// }
-		for (int j = 0; j <= 5; j++) {
-			if (!this.invalid("a" + j, mboard)) {
-				aboards = this.untilQuite(Arrays.copyOf(mboard, mboard.length), "a" + j);
-				Tuple b = max;
-				boolean found = false;
-				for (int[] curBoard : aboards) {
-					if (!this.isGameOver(curBoard)) {
-						if (!this.invalid("b0", curBoard)) {
-							found = true;
-							bboards = this.untilQuite(curBoard, "b0");
-							for (int[] bboard : bboards) {
-								b = Tuple.min(b, searchFlipped(ply - 1, Arrays.copyOf(bboard, bboard.length)));
-							}
-						}
-						for (int i = 1; i <= 5; i++) {
-							// if (b.value < alphaPrune) {
-							// return b;
-							// }
-							if (!this.invalid("b" + i, curBoard)) {
+		} else {
+			Tuple bb = bad;
+			ArrayList<int[]> aboards = new ArrayList<int[]>();
+			ArrayList<int[]> bboards = null;
+			if (this.isGameOver(mboard)) {
+				return new Tuple(this.hueristic(mboard), "n");
+			}
+			for (int j = 0; j <= 5; j++) {
+				if (!this.invalid("a" + j, mboard)) {
+					// System.out.println("b"+j);
+					aboards = this.untilQuite(Arrays.copyOf(mboard, mboard.length), "a" + j);
+					Tuple b = max;
+					boolean found = false;
+					// System.out.println(aboards.size());
+					for (int[] curBoard : aboards) {
+						if (!this.isGameOver(curBoard)) {
+							if (!this.invalid("b0", curBoard)) {
 								found = true;
-								bboards = this.untilQuite(curBoard, "b" + i);
+								bboards = this.untilQuite(curBoard, "b0");
 								for (int[] bboard : bboards) {
-									b = Tuple.min(b, searchFlipped(ply - 1, Arrays.copyOf(bboard, bboard.length)));
+									b = Tuple.min(b, search(ply - 1, Arrays.copyOf(bboard, bboard.length)));
 								}
 							}
+							for (int i = 1; i <= 5; i++) {
+								// if (b.value < alphaPrune) {
+								// return b;
+								// }
+								if (!this.invalid("b" + i, curBoard)) {
+									found = true;
+									bboards = this.untilQuite(curBoard, "b" + i);
+									for (int[] bboard : bboards) {
+										b = Tuple.min(b, search(ply - 1, Arrays.copyOf(bboard, bboard.length)));
+									}
+								}
+							}
+						} else {
+							b = new Tuple(this.hueristic(curBoard), "m");
+							found = true;
+							// System.out.println(b.value);
 						}
-					}else{
-						b = new Tuple(this.hueristic2(curBoard), "m");
+						if (found && b.value > bb.value) {
+							bb = b;
+							bb.move = "a" + j;
+						}
+						// bb = Tuple.max(bb, b);
+						// if (bb.value < alphaPrune) {
+						// alphaPrune = bb.value;
+						// }
 					}
-					if (found && b.value > bb.value) {
-						bb = b;
-						bb.move = "a" + j;
-					}
-					// bb = Tuple.max(bb, b);
-					// if (bb.value < alphaPrune) {
-					// alphaPrune = bb.value;
-					// }
 				}
 			}
+			return bb;
 		}
-		return bb;
-	}
-
 	}
 
 	public int hueristic(int[] board) {
@@ -277,15 +268,16 @@ public class MancalaAI {
 			return Integer.MAX_VALUE;
 		}
 		if (isGameOver(board) && board[13] - board[6] > 0)
-			return Integer.MIN_VALUE+2;
+			return Integer.MIN_VALUE + 2;
 		else if (this.isGameOver(board))
-			return Integer.MAX_VALUE-1;
+			return Integer.MAX_VALUE - 1;
 		int sum = 0;
 		for (int i = 0; i < board.length; i++) {
 			sum += (weights[i] * board[i]);
 		}
 		return sum;
 	}
+
 	public int hueristic2(int[] board) {
 		// Mancala m = new Mancala(null);
 		// System.out.println("board value: " + (board[13] - board[6]));
@@ -295,9 +287,9 @@ public class MancalaAI {
 			return Integer.MAX_VALUE;
 		}
 		if (isGameOver(board) && board[6] - board[13] > 0)
-			return Integer.MIN_VALUE+1;
+			return Integer.MIN_VALUE + 1;
 		else if (this.isGameOver(board))
-			return Integer.MAX_VALUE-1;
+			return Integer.MAX_VALUE - 1;
 		int sum = 0;
 		for (int i = 0; i < board.length; i++) {
 			sum += (weights[i] * board[i]);
@@ -336,7 +328,7 @@ public class MancalaAI {
 		} else {
 			inboards.add(board);
 		}
-		
+
 		int[] cur = null;
 		int[] aBoard = null;
 		while (inboards.size() > 0) {
@@ -349,7 +341,7 @@ public class MancalaAI {
 					playerTurn = false;
 					cur = Arrays.copyOf(aBoard, aBoard.length);
 					playerTurn = makeMove(ab + i, playerTurn, cur);
-					if (playerTurn|| this.isGameOver(cur)) {
+					if (playerTurn || this.isGameOver(cur)) {
 						outboards.add(cur);
 					} else {
 						inboards.add(cur);
