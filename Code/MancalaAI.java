@@ -5,7 +5,8 @@ public class MancalaAI {
 	int ply = 3;
 	Tuple bad = new Tuple(Integer.MIN_VALUE, "i");
 	Tuple max = new Tuple(Integer.MAX_VALUE, "a");
-	int[] weights = { 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 1 };
+	//int[] weights = { -781, -140, -371, 321, 842, 944, 941, 316, 368, 579, -355, 572, 251, -839 };
+	int[] weights = { 641, 356, 440, -699, -381, -195, -587, 828, -642, 85, -850, 970, -447, -960 };
 
 	public MancalaAI(int[] gaValues) {
 		weights = gaValues;

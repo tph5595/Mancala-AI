@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
 public class Mancala {
-	int bvalues = 3;
+	int bvalues = 4;
 	int[] board = { bvalues, bvalues, bvalues, bvalues, bvalues, bvalues, 0, bvalues, bvalues, bvalues, bvalues, bvalues, bvalues, 0 };
 	MancalaAI AI;
 	MancalaAI AI2;

@@ -3,9 +3,9 @@ import java.util.Arrays;
 public class Main {
 
 	public static void main(String[] args) {
-		boolean learn = true;
+		boolean learn = false;
 		if (learn) {
-			learn(10, 10, 5, -100, 100);
+			learn(30, 20, 5, -100, 100);
 		} else {
 			Mancala game = new Mancala(new MancalaAI());
 			game.run();
