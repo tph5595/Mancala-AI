@@ -3,12 +3,13 @@ import java.util.Arrays;
 
 public class MancalaAI {
 	int ply = 4;
+	int sply = ply;
 	ArrayList<int[]> inboards = new ArrayList<int[]>();
 
 	Tuple bad = new Tuple(Integer.MIN_VALUE, "i");
 	Tuple max = new Tuple(Integer.MAX_VALUE, "a");
 	int[] weights = { 1, 1, 1, 2, 2, -1000, -3, -2, -2, -1, -1, -1, -1, 1000 };
-	int[] masterBoards = new int[ply * 2];
+	int[] masterBoards = new int[ply * 4];
  
 	public MancalaAI(int[] gaValues) {
 		weights = gaValues;
@@ -20,6 +21,8 @@ public class MancalaAI {
 	}
 
 	public String nextmove(int[] board) {
+		ply = (sply)+((board[13]+board[6])/25)+((board[13]+board[6])/35)+((board[13]+board[6])/40);
+		System.out.println(ply);
 		return search(ply, board, false).move;
 	}
 
