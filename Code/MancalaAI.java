@@ -2,13 +2,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MancalaAI {
-	int ply = 3;
+	int ply = 4;
+	ArrayList<int[]> inboards = new ArrayList<int[]>();
+
 	Tuple bad = new Tuple(Integer.MIN_VALUE, "i");
 	Tuple max = new Tuple(Integer.MAX_VALUE, "a");
-	int[] weights = { 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 1 };
-
+	int[] weights = { 1, 1, 1, 2, 2, -1000, -3, -2, -2, -1, -1, -1, -1, 1000 };
+	int[] masterBoards = new int[ply * 2];
+ 
 	public MancalaAI(int[] gaValues) {
 		weights = gaValues;
+
 	}
 
 	public MancalaAI() {
@@ -16,14 +20,20 @@ public class MancalaAI {
 	}
 
 	public String nextmove(int[] board) {
-		return search(ply, board).move;
+		return search(ply, board, false).move;
 	}
 
 	public String nextmove(int[] board, boolean flip) {
 		return searchFlipped(ply, board).move;
 	}
 
-	public Tuple search(int ply, int[] mboard) {
+	public Tuple search(int ply, int[] mboard, boolean flipped) {
+		String ac = "a";
+		String bc = "b";
+		if (flipped) {
+			ac = "b";
+			bc = "a";
+		}
 		int alphaPrune = Integer.MIN_VALUE;
 		// if on last layer then search for last ply and then evaluate
 		if (ply - 1 == 0) {
@@ -40,8 +50,8 @@ public class MancalaAI {
 				// "free" moves)
 				// find possible board outcomes of mins move aj
 				// check if there are pieces in the position selected
-				if (!this.invalid("b" + j, mboard)) {
-					board = this.untilQuite(Arrays.copyOf(mboard, mboard.length), "b" + j);
+				if (!this.invalid(bc + j, mboard)) {
+					board = this.untilQuite(Arrays.copyOf(mboard, mboard.length), bc + j, false);
 					Tuple b = null;
 					// System.out.println(board.size());
 					// run through all of mins move aj
@@ -63,18 +73,23 @@ public class MancalaAI {
 							// }
 							// check if there are pieces in the position
 							// selected
-							if (!this.invalid("a" + i, curBoard)) {
+							if (!this.invalid(ac + i, curBoard)) {
 								// else calculate next branch same as we did for
 								// b0
 								b = Tuple.min(b,
-										new Tuple(this.hueristic(this.min(
-												this.untilQuite(Arrays.copyOf(curBoard, curBoard.length), "a" + i))),
-										"a" + i));
+										new Tuple(
+												this.hueristic(this.min(this
+														.untilQuite(Arrays.copyOf(curBoard, curBoard.length), ac + i, false))),
+										ac + i));
 							}
 						}
 						// find the max of all the current min moves
-						bb = Tuple.max(bb, b);
-						bb.move = "b" + j;
+						if(b.value > bb.value){
+							bb = b;
+							bb.move = bc + j;
+						}
+						//bb = Tuple.max(bb, b);
+						
 						// if this max is less than the current prune then set
 						// prune
 						// to this new max
@@ -94,30 +109,31 @@ public class MancalaAI {
 				return new Tuple(this.hueristic(mboard), "n");
 			}
 			for (int j = 0; j <= 5; j++) {
-				if (!this.invalid("b" + j, mboard)) {
+				if (!this.invalid(bc + j, mboard)) {
 					// System.out.println("b"+j);
-					aboards = this.untilQuite(Arrays.copyOf(mboard, mboard.length), "b" + j);
+					aboards = this.untilQuite(Arrays.copyOf(mboard, mboard.length), bc + j, false);
 					Tuple b = max;
 					boolean found = false;
 					// System.out.println(aboards.size());
 					for (int[] curBoard : aboards) {
 						if (!this.isGameOver(curBoard)) {
-							if (!this.invalid("a0", curBoard)) {
+							if (!this.invalid(ac + "0", curBoard)) {
 								found = true;
-								bboards = this.untilQuite(curBoard, "a0");
+								bboards = this.untilQuite(curBoard, ac + "0", false);
 								for (int[] bboard : bboards) {
-									b = Tuple.min(b, search(ply - 1, Arrays.copyOf(bboard, bboard.length)));
+									b = Tuple.min(b, search(ply - 1, Arrays.copyOf(bboard, bboard.length), flipped));
 								}
 							}
 							for (int i = 1; i <= 5; i++) {
 								// if (b.value < alphaPrune) {
 								// return b;
 								// }
-								if (!this.invalid("a" + i, curBoard)) {
+								if (!this.invalid(ac + i, curBoard)) {
 									found = true;
-									bboards = this.untilQuite(curBoard, "a" + i);
+									bboards = this.untilQuite(curBoard, ac + i, false);
 									for (int[] bboard : bboards) {
-										b = Tuple.min(b, search(ply - 1, Arrays.copyOf(bboard, bboard.length)));
+										b = Tuple.min(b,
+												search(ply - 1, Arrays.copyOf(bboard, bboard.length), flipped));
 									}
 								}
 							}
@@ -128,7 +144,7 @@ public class MancalaAI {
 						}
 						if (found && b.value > bb.value) {
 							bb = b;
-							bb.move = "b" + j;
+							bb.move = bc + j;
 						}
 						// bb = Tuple.max(bb, b);
 						// if (bb.value < alphaPrune) {
@@ -159,7 +175,7 @@ public class MancalaAI {
 				// find possible board outcomes of mins move aj
 				// check if there are pieces in the position selected
 				if (!this.invalid("a" + j, mboard)) {
-					board = this.untilQuite(Arrays.copyOf(mboard, mboard.length), "a" + j);
+					board = this.untilQuite(Arrays.copyOf(mboard, mboard.length), "a" + j, true);
 					Tuple b = null;
 					// System.out.println(board.size());
 					// run through all of mins move aj
@@ -186,7 +202,7 @@ public class MancalaAI {
 								// b0
 								b = Tuple.min(b,
 										new Tuple(this.hueristic(this.min(
-												this.untilQuite(Arrays.copyOf(curBoard, curBoard.length), "b" + i))),
+												this.untilQuite(Arrays.copyOf(curBoard, curBoard.length), "b" + i, true))),
 										"b" + i));
 							}
 						}
@@ -214,7 +230,7 @@ public class MancalaAI {
 			for (int j = 0; j <= 5; j++) {
 				if (!this.invalid("a" + j, mboard)) {
 					// System.out.println("b"+j);
-					aboards = this.untilQuite(Arrays.copyOf(mboard, mboard.length), "a" + j);
+					aboards = this.untilQuite(Arrays.copyOf(mboard, mboard.length), "a" + j, true);
 					Tuple b = max;
 					boolean found = false;
 					// System.out.println(aboards.size());
@@ -222,9 +238,9 @@ public class MancalaAI {
 						if (!this.isGameOver(curBoard)) {
 							if (!this.invalid("b0", curBoard)) {
 								found = true;
-								bboards = this.untilQuite(curBoard, "b0");
+								bboards = this.untilQuite(curBoard, "b0", true);
 								for (int[] bboard : bboards) {
-									b = Tuple.min(b, search(ply - 1, Arrays.copyOf(bboard, bboard.length)));
+									b = Tuple.min(b, searchFlipped(ply - 1, Arrays.copyOf(bboard, bboard.length)));
 								}
 							}
 							for (int i = 1; i <= 5; i++) {
@@ -233,9 +249,9 @@ public class MancalaAI {
 								// }
 								if (!this.invalid("b" + i, curBoard)) {
 									found = true;
-									bboards = this.untilQuite(curBoard, "b" + i);
+									bboards = this.untilQuite(curBoard, "b" + i, true);
 									for (int[] bboard : bboards) {
-										b = Tuple.min(b, search(ply - 1, Arrays.copyOf(bboard, bboard.length)));
+										b = Tuple.min(b, searchFlipped(ply - 1, Arrays.copyOf(bboard, bboard.length)));
 									}
 								}
 							}
@@ -261,9 +277,7 @@ public class MancalaAI {
 
 	public int hueristic(int[] board) {
 		// Mancala m = new Mancala(null);
-		// System.out.println("board value: " + (board[13] - board[6]));
 		// m.displayBoard(board);
-		// System.out.println("\n\n\n");
 		if (board == null) {
 			return Integer.MAX_VALUE;
 		}
@@ -275,6 +289,9 @@ public class MancalaAI {
 		for (int i = 0; i < board.length; i++) {
 			sum += (weights[i] * board[i]);
 		}
+		// System.out.println("board value: " + sum);
+
+		// System.out.println("\n\n\n");
 		return sum;
 	}
 
@@ -314,12 +331,12 @@ public class MancalaAI {
 		return ba;
 	}
 
-	private ArrayList<int[]> untilQuite(int[] board, String startMove) {
+	private ArrayList<int[]> untilQuite(int[] board, String startMove, boolean flipped) {
 		// System.out.println(startMove);
 		boolean playerTurn = false;
 		Mancala m = new Mancala(null);
 		String ab = startMove.substring(0, 1);
-		ArrayList<int[]> inboards = new ArrayList<int[]>();
+		inboards.clear();
 		ArrayList<int[]> outboards = new ArrayList<int[]>();
 		playerTurn = makeMove(startMove, playerTurn, board);
 		// m.displayBoard(board);
@@ -341,17 +358,60 @@ public class MancalaAI {
 					playerTurn = false;
 					cur = Arrays.copyOf(aBoard, aBoard.length);
 					playerTurn = makeMove(ab + i, playerTurn, cur);
+					// testing
+					
+					// end test
 					if (playerTurn || this.isGameOver(cur)) {
 						outboards.add(cur);
+						/*if (cur[12] == 0 && cur[11] == 0 && cur[10] == 0) {
+							// Mancala m = new Mancala(null);
+							m.displayBoard(cur);
+							int sum = 0;
+							for (int k = 0; k < cur.length; k++) {
+								sum += (weights[k] * cur[k]);
+							}
+							System.out.println("board value n : " + sum);
+
+							System.out.println("\n\n\n");
+						}*/
 					} else {
 						inboards.add(cur);
-						// System.out.println("\n\n\nadd\t" + ab + i);
-						// m.displayBoard(aBoard);
-						// m.displayBoard(cur);
 					}
 				}
 			}
 		}
+		int[] max = outboards.get(0);
+		int mv = 0;
+		if (!flipped)
+			mv = this.hueristic(max);
+		if (flipped)
+			mv = this.hueristic2(max);
+		for (int[] curb : outboards) {
+			if (!flipped && this.hueristic(curb) > mv) {
+				max = curb;
+				mv = this.hueristic(curb);
+			}
+			if (flipped && this.hueristic2(curb) > mv) {
+				max = curb;
+				mv = this.hueristic2(curb);
+			}
+		}
+		if(mv > 1000){
+			//m.displayBoard(max);
+			//System.out.println(mv+"\n"+startMove+"\n\n");
+		}
+		if (max[12] == 0 && max[11] == 0 && max[10] == 0) {
+			//m.displayBoard(max);
+			int sum = 0;
+			for (int k = 0; k < max.length; k++) {
+				sum += (weights[k] * max[k]);
+			}
+			//System.out.println("board value: " + sum);
+
+			//System.out.println("\n\n\n");
+		}
+		outboards.clear();
+		outboards.add(max);
 		return outboards;
 	}
 
