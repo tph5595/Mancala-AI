@@ -1,0 +1,16 @@
+Team: 
+Taylor Henderson 
+Andrew Lorentson 
+Stephen Yee
+
+Report
+
+Game: Mancala
+Rules:
+On a player's turn they may pick one of the 6 small cups with stones in it on their side of the board. Remove all stones from that cup move counterclockwise around the board placing them 1 at a time in each cup, including the large scoring cups on either end. The leftmost scoring cup belongs to the top player, the rightmost scoring cup belongs to the bottom player (the AI). If the player ends their turn by placing their last stone in their own scoring cup they get an extra turn, and can repeat this as many times as they are able. Once either player has runs out of stones on their side of the board the game ends and the player with the most stones in their scoring cup is the winner.
+
+Background: 
+There are many variations on Mancala, a few of the more common variations have been solved, and are generally first player wins assuming perfect play from both sides.
+
+Strategy:
+Our AI solution utilized min-max with 4 layers and alpha-beta pruning with heuristic function equal to the difference of stones scored for the two players. We also implemented a genetic algorithm to teach the AI. 
